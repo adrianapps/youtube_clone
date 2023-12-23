@@ -14,6 +14,7 @@ class Video(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     file = models.FileField(upload_to='media/videos/')
     thumbnail = models.ImageField(upload_to='media/thumbnails/', blank=True, null=True)
+    description = models.TextField(max_length=5000, blank=True, null=True)
     upload_date = models.DateTimeField(auto_now_add=True)
     tag = models.ManyToManyField(Tag, blank=True)
     likes = models.IntegerField(default=0)

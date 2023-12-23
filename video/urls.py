@@ -8,5 +8,7 @@ app_name = 'video'
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('video/<int:pk>', views.video_detail, name='video'),
+    path('video/<int:pk>', views.video_detail, name='video-detail'),
+    path('add_video/', views.add_video, name='add-video'),
+    path('search/', views.search, name='search'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

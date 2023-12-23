@@ -1,15 +1,45 @@
 {% extends 'video/base.html' %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 <section class="container mt-4">
     <h2>{{ video.title }}</h2>
+
+    <!-- Video Player -->
     <div class="row">
         <div class="col-md-4 mb-4">
-        <video width="800" height="450" controls>
-        <source src="{{ video.file.url }}" type="video/mp4">
-    </video>
-
-
+            <video width="800" height="450" controls>
+                <source src="{{ video.file.url }}" type="video/mp4">
+            </video>
+        </div>
     </div>
+
+    <!-- Video Description -->
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <h3>Description</h3>
+            <p>{{ video.description }}</p>
+        </div>
+    </div>
+
+    <!-- Comments Section -->
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <h3>Comments</h3>
+        {% if user.is_authenticated %}
+            <form method="post" action="">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type="submit">Post Comment</button>
+            </form>
+        {% endif %}
+            {% for comment in comment_list %}
+                <div class="comment">
+                    <p>{{ comment.user }}: {{ comment.content }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
 </section>
 {% endblock %}
