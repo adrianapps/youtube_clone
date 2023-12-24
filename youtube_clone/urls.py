@@ -20,5 +20,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('', include('video.urls')),
+    path('', include('channel.urls')),
     path('admin/', admin.site.urls)
 ]
