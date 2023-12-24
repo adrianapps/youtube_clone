@@ -1,15 +1,19 @@
 from django.contrib.auth.decorators import login_required
 from django.db.models import F, Q
+from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Video
 from .forms import CommentForm, VideoForm
 
 
 def home(request):
-    video_list = Video.objects.all()
+    video_list = Video.objects.order_by('upload_date')
+    paginator = Paginator(video_list, 1)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     context = {
-        'video_list': video_list
+        'page_obj': page_obj
     }
     return render(request, 'video/home.html', context)
 

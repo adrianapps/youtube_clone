@@ -1,22 +1,40 @@
 {% extends 'video/base.html' %}
 
 {% block content %}
-<section class="container mt-4">
-    <h2>Videos</h2>
-    <div class="row">
-        <div class="col-md-4 mb-4">
-            {% for video in video_list %}
-            <div class="card">
-                <img src="{{ video.thumbnail.url }}" class="card-img-top" alt="Video Thumbnail">
-                <div class="card-body">
-                    <h5 class="card-title">{{ video.title }}</h5>
-                    <p class="card-text">Video description goes here.</p>
-                    <a href="{% url 'video:video-detail' video.id %}" class="btn btn-primary">Watch Video</a>
+    <section class="container mt-4">
+        <h2>Videos</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                {% for video in page_obj %}
+                    <div class="card">
+                    <img src="{{ video.thumbnail.url }}" class="card-img-top" alt="Video Thumbnail">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ video.title }}</h5>
+                        <p class="card-text">Video description goes here.</p>
+                        <a href="{% url 'video:video-detail' video.id %}" class="btn btn-primary">Watch Video</a>
+                    </div>
+                {% endfor %}
                 </div>
-            {% endfor %}
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
+                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                            </li>
+                        {% endif %}
+                        <li class="page-item active">
+                            <a class="page-link" href="#">{{ page_obj.number }}<span class="sr-only">(current)</span></a>
+                        </li>
+                        {% if page_obj.has_next %}
+                            <li class="page-item"><a class="page-link"
+                                                     href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
             </div>
-        </div>
 
-    </div>
-</section>
+        </div>
+    </section>
 {% endblock %}
