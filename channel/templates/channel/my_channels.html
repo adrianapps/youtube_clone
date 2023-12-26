@@ -2,7 +2,7 @@
 
 {% block content %}
     <section class="container mt-4">
-        <h2>My Channels</h2>
+        <h2>My Channels | <a href="{% url 'channel:channel-create' %}">Create a Channel</a></h2>
         <div class="row">
             <div class="col-md-4 mb-4">
                 {% for channel in page_obj %}
@@ -10,7 +10,7 @@
                     <img src="{{ channel.avatar.url }}" class="card-img-top" alt="Video Thumbnail">
                     <div class="card-body">
                         <h5 class="card-title">{{ channel.name }}</h5>
-                        <p class="card-text">Channel description goes here.</p>
+                        <p class="card-text">{{ channel.description }}</p>
                         <a href="{% url 'channel:channel-detail' channel.id %}" class="btn btn-primary">Go</a>
                     </div>
                 {% endfor %}

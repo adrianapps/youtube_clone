@@ -1,11 +1,13 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 
 from video.models import Video
 from .models import Channel
-from .forms import RegisterForm
+from .forms import RegisterForm, ChannelForm
 
 
 def log_in(request):
@@ -62,3 +64,37 @@ def channel_detail(request, pk):
         'page_obj': page_obj
     }
     return render(request, 'channel/channel_detail.html', context)
+
+
+@login_required
+def channel_create(request):
+    form = ChannelForm(request.POST or None, request.FILES or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            form.instance.user = request.user
+            form.save()
+            return redirect(reverse('channel:channel-detail', kwargs={'pk': form.instance.id}))
+
+    return render(request, 'channel/channel_create.html', {'form': form})
+
+
+def channel_update(request, pk):
+    channel = get_object_or_404(Channel, pk=pk)
+    if request.user != channel.user:
+        raise Http404('Unable to update channel, you are not the creator')
+
+    form = ChannelForm(request.POST or None, request.FILES or None, instance=channel)
+    if request.method == 'POST':
+        if form.is_valid():
+            form.instance.user = request.user
+            form.save()
+            return redirect(reverse('channel:channel-detail', kwargs={'pk': form.instance.id}))
+    return render(request, 'channel/channel_update.html', {'form': form})
+
+
+def channel_delete(request, pk):
+    channel = get_object_or_404(Channel, pk=pk)
+    if request.user != channel.user:
+        raise Http404('Unable to delete this channel, you are not the creator')
+    channel.delete()
+    return redirect('channel:my-channels')
