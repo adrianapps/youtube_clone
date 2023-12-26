@@ -1,7 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.db.models import F, Q
 from django.core.paginator import Paginator
+from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
+
 from .models import Video
 from .forms import CommentForm, VideoForm
 
@@ -68,3 +71,28 @@ def search(request):
         'query': query
     }
     return render(request, 'video/search.html', context)
+
+
+@login_required
+def video_update(request, pk):
+    video = get_object_or_404(Video, pk=pk)
+    if video.user != request.user:
+        raise Http404('Unable to update this video, you are not the creator')
+
+    form = VideoForm(request.POST or None, request.FILES or None, instance=video)
+    if request.method == 'POST':
+        if form.is_valid():
+            form.instance.user = request.user
+            form.save()
+            return redirect(reverse('video:video-detail', kwargs={'pk': form.instance.id}))
+
+    return render(request, 'video/update_video.html', {'form': form})
+
+
+@login_required
+def video_delete(request, pk):
+    video = get_object_or_404(Video, pk=pk)
+    if video.user != request.user:
+        raise Http404('Unable to delete this video, you are not the creator')
+    video.delete()
+    return redirect('video:home')

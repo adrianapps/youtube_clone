@@ -3,7 +3,12 @@
 
 {% block content %}
 <section class="container mt-4">
-    <h2>{{ video.title }}</h2>
+    <h2>{{ video.title }}
+    {% if request.user == video.user %}
+        | <a href="{% url 'video:vide-update' video.id %}">Update</a>
+        | <a href="{% url 'video:video-delete' video.id %}">Delete</a>
+    {% endif %}
+    </h2>
 
     <!-- Video Player -->
     <div class="row">
@@ -16,7 +21,7 @@
 
     <div class="row mt-4">
         <div class="col-md-8">
-            <h3>Uploaded by: {{ video.user }}</h3>
+            <h3>Uploaded by: <a href="{% url 'channel:channel-detail' video.channel_id %}">{{ video.channel }}</a></h3>
         </div>
 
     </div>

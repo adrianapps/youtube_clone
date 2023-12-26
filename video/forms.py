@@ -14,6 +14,6 @@ class CommentForm(forms.ModelForm):
 class VideoForm(forms.ModelForm):
     class Meta:
         model = Video
-        fields = ['title', 'file', 'description', 'thumbnail', 'tag']
+        fields = ['channel', 'title', 'file', 'description', 'thumbnail', 'tag']
 
 
