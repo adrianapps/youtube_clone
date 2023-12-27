@@ -53,17 +53,35 @@ def my_channels(request):
     return render(request, 'channel/my_channels.html', context)
 
 
-def channel_detail(request, pk):
+def get_channel(request, pk):
     channel = get_object_or_404(Channel, pk=pk)
-    video_list = Video.objects.filter(channel_id=pk)
+    video_list = Video.objects.filter(channel_id=pk).order_by('-upload_date')
     paginator = Paginator(video_list, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
     context = {
         'channel': channel,
         'page_obj': page_obj
     }
+    return channel, context
+
+
+def channel_detail(request, pk):
+    channel, context = get_channel(request, pk)
+    if request.user == channel.user:
+        return redirect('channel:creator-channel-detail', pk=pk)
+    context['subscription_status'] = channel.subscription_status(request.user)
+
     return render(request, 'channel/channel_detail.html', context)
+
+
+def creator_channel_detail(request, pk):
+    channel, context = get_channel(request, pk)
+    if request.user != channel.user:
+        return redirect('channel:channel-detail', pk=pk)
+
+    return render(request, 'channel/creator_channel_detail.html', context)
 
 
 @login_required
@@ -98,3 +116,16 @@ def channel_delete(request, pk):
         raise Http404('Unable to delete this channel, you are not the creator')
     channel.delete()
     return redirect('channel:my-channels')
+
+
+@login_required
+def subscribe(request, pk):
+    channel = get_object_or_404(Channel, pk=pk)
+    if request.user == channel.user:
+        return redirect('channel:channel-detail', pk=pk)
+
+    if channel.subscribers.filter(id=request.user.id).exists():
+        channel.subscribers.remove(request.user)
+    else:
+        channel.subscribers.add(request.user)
+    return redirect('channel:channel-detail', pk=pk)

@@ -12,8 +12,12 @@ class Channel(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
     avatar = models.ImageField(upload_to='media/avatars')
 
+    @property
     def subscriber_count(self):
         return self.subscribers.count()
 
+    def subscription_status(self, user):
+        return self.subscribers.filter(pk=user.id).exists()
+
     def __str__(self):
-        return f"{self.name}"
+        return self.name
