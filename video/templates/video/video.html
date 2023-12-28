@@ -2,55 +2,61 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<section class="container mt-4">
-    <h2>{{ video.title }}
-    {% if request.user == video.user %}
-        | <a href="{% url 'video:vide-update' video.id %}">Update</a>
-        | <a href="{% url 'video:video-delete' video.id %}">Delete</a>
-    {% endif %}
-    </h2>
+    <section class="container mt-4">
+        <h2>{{ video.title }}
+            {% if request.user == video.user %}
+                | <a href="{% url 'video:vide-update' video.id %}">Update</a>
+                | <a href="{% url 'video:video-delete' video.id %}">Delete</a>
+            {% endif %}
+        </h2>
+        <a href="{% url 'video:like' video.id %}"
+           {% if like_status %}style="color: green"{% endif %}>Like: {{ video.like_count }}</a>
 
-    <!-- Video Player -->
-    <div class="row">
-        <div class="col-md-4 mb-4">
-            <video width="800" height="450" controls>
-                <source src="{{ video.file.url }}" type="video/mp4">
-            </video>
+        <a href="{% url 'video:dislike' video.id %}"
+           {% if dislike_status %}style="color: green"{% endif %}>Dislike: {{ video.dislike_count }}</a>
+
+        <!-- Video Player -->
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <video width="800" height="450" controls>
+                    <source src="{{ video.file.url }}" type="video/mp4">
+                </video>
+            </div>
         </div>
-    </div>
 
-    <div class="row mt-4">
-        <div class="col-md-8">
-            <h3>Uploaded by: <a href="{% url 'channel:channel-detail' video.channel_id %}">{{ video.channel }}</a></h3>
+        <div class="row mt-4">
+            <div class="col-md-8">
+                <h3>Uploaded by: <a href="{% url 'channel:channel-detail' video.channel_id %}">{{ video.channel }}</a>
+                </h3>
+            </div>
+
+        </div>
+        <!-- Video Description -->
+        <div class="row mt-4">
+            <div class="col-md-8">
+                <h3>Description</h3>
+                <p>{{ video.description }}</p>
+            </div>
         </div>
 
-    </div>
-    <!-- Video Description -->
-    <div class="row mt-4">
-        <div class="col-md-8">
-            <h3>Description</h3>
-            <p>{{ video.description }}</p>
+        <!-- Comments Section -->
+        <div class="row mt-4">
+            <div class="col-md-8">
+                <h3>Comments</h3>
+                {% if user.is_authenticated %}
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <button type="submit">Post Comment</button>
+                    </form>
+                {% endif %}
+                {% for comment in comment_list %}
+                    <div class="comment">
+                        <p>{{ comment.user }}: {{ comment.content }}</p>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
-    </div>
 
-    <!-- Comments Section -->
-    <div class="row mt-4">
-        <div class="col-md-8">
-            <h3>Comments</h3>
-        {% if user.is_authenticated %}
-            <form method="post" action="">
-                {% csrf_token %}
-                {{ form|crispy }}
-                <button type="submit">Post Comment</button>
-            </form>
-        {% endif %}
-            {% for comment in comment_list %}
-                <div class="comment">
-                    <p>{{ comment.user }}: {{ comment.content }}</p>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-</section>
+    </section>
 {% endblock %}

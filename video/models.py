@@ -18,8 +18,23 @@ class Video(models.Model):
     description = models.TextField(max_length=5000, blank=True, null=True)
     upload_date = models.DateTimeField(auto_now_add=True)
     tag = models.ManyToManyField(Tag, blank=True)
-    likes = models.IntegerField(default=0)
+    likes = models.ManyToManyField(User, related_name='video_like')
+    dislikes = models.ManyToManyField(User, related_name='video_dislike')
     views = models.IntegerField(default=0)
+
+    @property
+    def dislike_count(self):
+        return self.dislikes.count()
+
+    def dislike_status(self, user):
+        return self.dislikes.filter(pk=user.id).exists()
+
+    @property
+    def like_count(self):
+        return self.likes.count()
+
+    def like_status(self, user):
+        return self.likes.filter(pk=user.id).exists()
 
     @property
     def comment_count(self):

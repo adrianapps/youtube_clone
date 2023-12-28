@@ -35,10 +35,15 @@ def video_detail(request, pk):
             new_comment.user = request.user
             new_comment.save()
 
+    like_status = video.like_status(request.user)
+    dislike_status = video.dislike_status(request.user)
+
     context = {
         'video': video,
         'form': form,
-        'comment_list': comment_list
+        'comment_list': comment_list,
+        'like_status': like_status,
+        'dislike_status': dislike_status
     }
 
     return render(request, 'video/video.html', context)
@@ -96,3 +101,35 @@ def video_delete(request, pk):
         raise Http404('Unable to delete this video, you are not the creator')
     video.delete()
     return redirect('video:home')
+
+
+def toggle_like(request, video, is_like):
+    if is_like:
+        active_set = video.likes
+        inactive_set = video.dislikes
+    else:
+        active_set = video.dislikes
+        inactive_set = video.likes
+
+    if active_set.filter(id=request.user.id).exists():
+        active_set.remove(request.user)
+    else:
+        active_set.add(request.user)
+        if inactive_set.filter(id=request.user.id).exists():
+            inactive_set.remove(request.user)
+
+    return redirect(reverse('video:video-detail', kwargs={'pk': video.id}))
+
+
+@login_required
+def like(request, pk):
+    video = get_object_or_404(Video, pk=pk)
+
+    return toggle_like(request, video, True)
+
+
+@login_required
+def dislike(request, pk):
+    video = get_object_or_404(Video, pk=pk)
+
+    return toggle_like(request, video, False)
