@@ -51,9 +51,9 @@ def video_detail(request, pk):
 
 @login_required
 def add_video(request):
-    form = VideoForm()
+    form = VideoForm(request.user)
     if request.method == 'POST':
-        form = VideoForm(request.POST, request.FILES)
+        form = VideoForm(request.user, request.POST, request.FILES)
         if form.is_valid():
             new_video = form.save(commit=False)
             new_video.user = request.user
