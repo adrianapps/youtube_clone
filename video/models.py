@@ -1,5 +1,6 @@
 from channel.models import User, Channel
 from django.db import models
+from .validators import validate_file_extension
 
 
 class Tag(models.Model):
@@ -13,7 +14,7 @@ class Video(models.Model):
     title = models.CharField(max_length=80)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     channel = models.ForeignKey(Channel, null=True, on_delete=models.CASCADE)
-    file = models.FileField(upload_to='media/videos/')
+    file = models.FileField(upload_to='media/videos/', validators=[validate_file_extension])
     thumbnail = models.ImageField(upload_to='media/thumbnails/', blank=True, null=True)
     description = models.TextField(max_length=5000, blank=True, null=True)
     upload_date = models.DateTimeField(auto_now_add=True)
