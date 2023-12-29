@@ -16,5 +16,6 @@ urlpatterns = [
     path('channel_update/<int:pk>', views.channel_update, name='channel-update'),
     path('channel/<int:pk>', views.channel_detail, name='channel-detail'),
     path('creator_channel/<int:pk>', views.creator_channel_detail, name='creator-channel-detail'),
-    path('subscribe/<int:pk>', views.subscribe, name='subscribe')
+    path('subscribe/<int:pk>', views.subscribe, name='subscribe'),
+    path('subscriptions/', views.my_subscriptions, name='my-subscriptions')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

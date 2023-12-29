@@ -28,7 +28,7 @@
             </li>
             {% if user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Subscriptions</a>
+                    <a class="nav-link" href="{% url 'channel:my-subscriptions' %}">Subscriptions</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'video:add-video' %}">Add Video</a>
