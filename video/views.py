@@ -84,7 +84,7 @@ def video_update(request, pk):
     if video.user != request.user:
         raise Http404('Unable to update this video, you are not the creator')
 
-    form = VideoForm(request.POST or None, request.FILES or None, instance=video)
+    form = VideoForm(request.user, request.POST or None, request.FILES or None, instance=video)
     if request.method == 'POST':
         if form.is_valid():
             form.instance.user = request.user
