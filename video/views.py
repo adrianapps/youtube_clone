@@ -5,7 +5,7 @@ from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 
-from .models import Video
+from .models import Video, WatchLater
 from .forms import CommentForm, VideoForm
 
 
@@ -37,13 +37,15 @@ def video_detail(request, pk):
 
     like_status = video.like_status(request.user)
     dislike_status = video.dislike_status(request.user)
+    watch_later_status = WatchLater.objects.filter(user=request.user, video=video).exists()
 
     context = {
         'video': video,
         'form': form,
         'comment_list': comment_list,
         'like_status': like_status,
-        'dislike_status': dislike_status
+        'dislike_status': dislike_status,
+        'watch_later_status': watch_later_status
     }
 
     return render(request, 'video/video.html', context)
@@ -133,3 +135,22 @@ def dislike(request, pk):
     video = get_object_or_404(Video, pk=pk)
 
     return toggle_like(request, video, False)
+
+
+@login_required
+def watch_later(request, pk):
+    video = get_object_or_404(Video, pk=pk)
+    obj, created = WatchLater.objects.get_or_create(user=request.user, video=video)
+    if not created:
+        obj.delete()
+    return redirect(reverse('video:video-detail', kwargs={'pk': pk}))
+
+
+@login_required
+def my_watch_later(request):
+    video_list = WatchLater.objects.filter(user=request.user).order_by('-timestamp')
+    paginator = Paginator(video_list, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'video/my_watch_later.html', {'page_obj': page_obj})

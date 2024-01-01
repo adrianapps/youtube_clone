@@ -21,6 +21,12 @@
                 <video width="800" height="450" controls>
                     <source src="{{ video.file.url }}" type="video/mp4">
                 </video>
+                <a href="{% url 'video:watch-later' video.id %}">
+                    {% if watch_later_status %}
+                    Remove from Watch Later</a>
+                    {% else %}
+                        Add to Watch Later</a>
+                    {% endif %}
             </div>
         </div>
 
