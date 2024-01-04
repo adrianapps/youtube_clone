@@ -5,9 +5,21 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 from channel.models import User, Channel
-from video.models import Video, Tag, WatchLater
-from .serializers import UserSerializer, ChannelSerializer, VideoSerializer, TagSerializer, WatchLaterSerializer
+from video.models import Video, Tag, WatchLater, Comment
+from .serializers import UserSerializer, ChannelSerializer, VideoSerializer, TagSerializer, WatchLaterSerializer, CommentSerializer
 from .permissions import IsOwnerOrReadOnly
+
+
+@api_view(['GET'])
+def api_root(request, format=None):
+    return Response({
+        'user': reverse('api:user-list', request=request, format=format),
+        'channel': reverse('api:channel-list', request=request, format=format),
+        'video': reverse('api:video-list', request=request, format=format),
+        'tag': reverse('api:tag-list', request=request, format=format),
+        'watch_later': reverse('api:watch-later-list', request=request, format=format),
+        'comment': reverse('api:comment-list', request=request, format=format),
+    })
 
 
 class UserListAPIView(generics.ListCreateAPIView):
@@ -67,4 +79,16 @@ class WatchLaterListAPIView(generics.ListCreateAPIView):
 class WatchLaterDetailAPIView(IsOwnerOrReadOnly, generics.RetrieveUpdateDestroyAPIView):
     queryset = WatchLater.objects.all()
     serializer_class = WatchLaterSerializer
+    permission_classes = [IsOwnerOrReadOnly]
+
+
+class CommentListAPIView(generics.ListCreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [DjangoModelPermissions]
+
+
+class CommentDetailAPIView(IsOwnerOrReadOnly, generics.RetrieveUpdateDestroyAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
     permission_classes = [IsOwnerOrReadOnly]

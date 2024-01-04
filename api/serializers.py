@@ -1,38 +1,77 @@
+from rest_framework.reverse import reverse
+
 from channel.models import User
 from rest_framework import serializers
 from channel.models import Channel
-from video.models import Video, Tag, WatchLater
+from video.models import Video, Tag, WatchLater, Comment
 
 
-class ChannelSerializer(serializers.ModelSerializer):
+class BaseSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField(read_only=True)
+
+    def get_url(self, obj):
+        request = self.context.get('request')
+        if request is None:
+            return None
+        return reverse('api:channel-detail', kwargs={'pk': obj.pk}, request=request)
+
+
+class ChannelSerializer(BaseSerializer):
     class Meta:
         model = Channel
-        fields = ['id', 'name', 'user', 'description', 'subscribers', 'avatar', 'creation_date']
+        fields = [
+            'url',
+            'id',
+            'name',
+            'user',
+            'description',
+            'subscribers',
+            'avatar',
+            'creation_date'
+        ]
         read_only_fields = ['subscribers']
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(BaseSerializer):
     channels = ChannelSerializer(many=True, read_only=True, source='channel_set')
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'channels']
+        fields = ['url', 'id', 'username', 'email', 'channels']
 
 
-class VideoSerializer(serializers.ModelSerializer):
+class VideoSerializer(BaseSerializer):
     class Meta:
         model = Video
-        fields = '__all__'
-        read_only_fields = ['views', 'likes', 'dislikes']
+        fields = [
+            'url',
+            'id',
+            'title',
+            'user',
+            'description',
+            'file',
+            'upload_date'
+        ]
+        read_only_fields = ['upload_date', 'views', 'likes', 'dislikes']
 
 
-class TagSerializer(serializers.ModelSerializer):
+class TagSerializer(BaseSerializer):
     class Meta:
         model = Tag
-        fields = '__all__'
+        fields = ['url', 'id', 'name']
 
 
-class WatchLaterSerializer(serializers.ModelSerializer):
+class WatchLaterSerializer(BaseSerializer):
+
     class Meta:
         model = WatchLater
-        fields = '__all__'
+        fields = ['url', 'id', 'user', 'video', 'timestamp']
+        read_only_fields = ['timestamp']
+
+
+class CommentSerializer(BaseSerializer):
+
+    class Meta:
+        model = Comment
+        fields = ['url', 'id', 'user', 'video', 'content', 'timestamp']
+        read_only_fields = ['timestamp']
