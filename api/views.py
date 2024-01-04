@@ -17,7 +17,7 @@ def api_root(request, format=None):
         'channel': reverse('api:channel-list', request=request, format=format),
         'video': reverse('api:video-list', request=request, format=format),
         'tag': reverse('api:tag-list', request=request, format=format),
-        'watch_later': reverse('api:watch-later-list', request=request, format=format),
+        'watch_later': reverse('api:watchlater-list', request=request, format=format),
         'comment': reverse('api:comment-list', request=request, format=format),
     })
 

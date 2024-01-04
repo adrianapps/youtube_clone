@@ -11,9 +11,13 @@ class BaseSerializer(serializers.ModelSerializer):
 
     def get_url(self, obj):
         request = self.context.get('request')
+        view_name = f'api:{self.Meta.model.__name__.lower()}-detail'
         if request is None:
             return None
-        return reverse('api:channel-detail', kwargs={'pk': obj.pk}, request=request)
+        return reverse(view_name, kwargs={'pk': obj.pk}, request=request)
+
+    class Meta:
+        abstract = True
 
 
 class ChannelSerializer(BaseSerializer):
@@ -62,7 +66,6 @@ class TagSerializer(BaseSerializer):
 
 
 class WatchLaterSerializer(BaseSerializer):
-
     class Meta:
         model = WatchLater
         fields = ['url', 'id', 'user', 'video', 'timestamp']
@@ -70,7 +73,6 @@ class WatchLaterSerializer(BaseSerializer):
 
 
 class CommentSerializer(BaseSerializer):
-
     class Meta:
         model = Comment
         fields = ['url', 'id', 'user', 'video', 'content', 'timestamp']

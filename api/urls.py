@@ -14,8 +14,8 @@ urlpatterns = format_suffix_patterns([
     path('video/<int:pk>', views.VideoDetailAPIView.as_view(), name='video-detail'),
     path('tag/', views.TagListAPIView.as_view(), name='tag-list'),
     path('tag/<int:pk>', views.TagDetailAPIView.as_view(), name='tag-detail'),
-    path('watch_later/', views.WatchLaterListAPIView.as_view(), name='watch-later-list'),
-    path('watch_later/<int:pk>', views.WatchLaterDetailAPIView.as_view(), name='watch-later-detail'),
+    path('watch_later/', views.WatchLaterListAPIView.as_view(), name='watchlater-list'),
+    path('watch_later/<int:pk>', views.WatchLaterDetailAPIView.as_view(), name='watchlater-detail'),
     path('comment/', views.CommentListAPIView.as_view(), name='comment-list'),
     path('comment/<int:pk>', views.CommentDetailAPIView.as_view(), name='comment-detail'),
 ])
