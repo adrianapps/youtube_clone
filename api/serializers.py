@@ -21,6 +21,8 @@ class BaseSerializer(serializers.ModelSerializer):
 
 
 class ChannelSerializer(BaseSerializer):
+    user_url = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Channel
         fields = [
@@ -28,6 +30,7 @@ class ChannelSerializer(BaseSerializer):
             'id',
             'name',
             'user',
+            'user_url',
             'description',
             'subscribers',
             'avatar',
@@ -35,28 +38,49 @@ class ChannelSerializer(BaseSerializer):
         ]
         read_only_fields = ['subscribers']
 
+    def get_user_url(self, obj):
+        if obj.user:
+            return reverse('api:user-detail', kwargs={'pk': obj.user.pk}, request=self.context.get('request'))
+        return None
+
 
 class UserSerializer(BaseSerializer):
-    channels = ChannelSerializer(many=True, read_only=True, source='channel_set')
-
     class Meta:
         model = User
-        fields = ['url', 'id', 'username', 'email', 'channels']
+        fields = ['url', 'id', 'username', 'email']
 
 
 class VideoSerializer(BaseSerializer):
+    channel_url = serializers.SerializerMethodField(read_only=True)
+    user_url = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Video
         fields = [
             'url',
             'id',
             'title',
+            'channel',
+            'channel_url',
             'user',
+            'user_url',
             'description',
             'file',
+            'likes',
+            'dislikes',
             'upload_date'
         ]
-        read_only_fields = ['upload_date', 'views', 'likes', 'dislikes']
+        read_only_fields = ['channel', 'upload_date', 'views', 'likes', 'dislikes']
+
+    def get_channel_url(self, obj):
+        if obj.channel:
+            return reverse('api:channel-detail', kwargs={'pk': obj.channel.pk}, request=self.context.get('request'))
+        return None
+
+    def get_user_url(self, obj):
+        if obj.user:
+            return reverse('api:user-detail', kwargs={'pk': obj.user.pk}, request=self.context.get('request'))
+        return None
 
 
 class TagSerializer(BaseSerializer):
@@ -66,14 +90,57 @@ class TagSerializer(BaseSerializer):
 
 
 class WatchLaterSerializer(BaseSerializer):
+    user_url = serializers.SerializerMethodField(read_only=True)
+    video_url = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = WatchLater
-        fields = ['url', 'id', 'user', 'video', 'timestamp']
+        fields = [
+            'url',
+            'id',
+            'user',
+            'user_url',
+            'video',
+            'video_url',
+            'timestamp'
+        ]
         read_only_fields = ['timestamp']
+
+    def get_user_url(self, obj):
+        if obj.user:
+            return reverse('api:user-detail', kwargs={'pk': obj.user.pk}, request=self.context.get('request'))
+        return None
+
+    def get_video_url(self, obj):
+        if obj.video:
+            return reverse('api:video-detail', kwargs={'pk': obj.video.pk}, request=self.context.get('request'))
+        return None
 
 
 class CommentSerializer(BaseSerializer):
+    user_url = serializers.SerializerMethodField(read_only=True)
+    video_url = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Comment
-        fields = ['url', 'id', 'user', 'video', 'content', 'timestamp']
-        read_only_fields = ['timestamp']
+        fields = [
+            'url',
+            'id',
+            'user',
+            'user_url',
+            'video',
+            'video_url',
+            'content',
+            'timestamp'
+        ]
+        read_only_fields = ['video', 'timestamp']
+
+    def get_user_url(self, obj):
+        if obj.user:
+            return reverse('api:user-detail', kwargs={'pk': obj.user.pk}, request=self.context.get('request'))
+        return None
+
+    def get_video_url(self, obj):
+        if obj.video:
+            return reverse('api:video-detail', kwargs={'pk': obj.video.pk}, request=self.context.get('request'))
+        return None
