@@ -3,7 +3,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
 from . import views
-from .views import UserViewSet, VideoViewSet, ChannelViewSet, TagViewSet, WatchLaterViewSet
+from .views import UserViewSet, VideoViewSet, ChannelViewSet, TagViewSet, WatchLaterViewSet, CommentViewSet
 
 app_name = 'api'
 
@@ -28,6 +28,7 @@ router.register('user', UserViewSet, basename='user')
 router.register('video', VideoViewSet, basename='video')
 router.register('channel', ChannelViewSet, basename='channel')
 router.register('tag', TagViewSet, basename='tag')
+router.register('comment', CommentViewSet, basename='comment')
 router.register('watchlater', WatchLaterViewSet, basename='watchlater')
 
 urlpatterns = [

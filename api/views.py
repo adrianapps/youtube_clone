@@ -9,6 +9,7 @@ from video.models import Video, Tag, WatchLater, Comment
 from .serializers import UserSerializer, ChannelSerializer, VideoSerializer, TagSerializer, WatchLaterSerializer, \
     CommentSerializer
 from .permissions import IsOwnerOrReadOnly
+from .mixins import IsOwnerOrReadOnlyMixin
 
 
 # @api_view(['GET'])
@@ -100,20 +101,12 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
 
 
-class VideoViewSet(viewsets.ModelViewSet):
+class VideoViewSet(IsOwnerOrReadOnlyMixin, viewsets.ModelViewSet):
     serializer_class = VideoSerializer
     queryset = Video.objects.all()
-    authentication_classes = [authentication.TokenAuthentication]
-
-    def get_permissions(self):
-        if self.action in ['destroy', 'update', 'partial_update']:
-            permission_classes = [IsOwnerOrReadOnly]
-        else:
-            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-        return [permission() for permission in permission_classes]
 
 
-class ChannelViewSet(viewsets.ModelViewSet):
+class ChannelViewSet(IsOwnerOrReadOnlyMixin, viewsets.ModelViewSet):
     serializer_class = ChannelSerializer
     queryset = Channel.objects.all()
 
@@ -123,11 +116,11 @@ class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
 
 
-class CommentViewSet(viewsets.ModelViewSet):
+class CommentViewSet(IsOwnerOrReadOnlyMixin, viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()
 
 
-class WatchLaterViewSet(viewsets.ModelViewSet):
+class WatchLaterViewSet(IsOwnerOrReadOnlyMixin, viewsets.ModelViewSet):
     serializer_class = WatchLaterSerializer
     queryset = WatchLater.objects.all()
