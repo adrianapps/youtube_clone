@@ -43,6 +43,12 @@ class ChannelSerializer(BaseSerializer):
             return reverse('api:user-detail', kwargs={'pk': obj.user.pk}, request=self.context.get('request'))
         return None
 
+    def create(self, validated_data):
+        request = self.context.get('request')
+        if request and request.user:
+            validated_data['user'] = request.user
+        return super().create(validated_data)
+
 
 class UserSerializer(BaseSerializer):
     class Meta:
@@ -104,7 +110,7 @@ class WatchLaterSerializer(BaseSerializer):
             'video_url',
             'timestamp'
         ]
-        read_only_fields = ['timestamp']
+        read_only_fields = ['user', 'timestamp']
 
     def get_user_url(self, obj):
         if obj.user:
@@ -115,6 +121,12 @@ class WatchLaterSerializer(BaseSerializer):
         if obj.video:
             return reverse('api:video-detail', kwargs={'pk': obj.video.pk}, request=self.context.get('request'))
         return None
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        if request and request.user:
+            validated_data['user'] = request.user
+        return super().create(validated_data)
 
 
 class CommentSerializer(BaseSerializer):
@@ -133,7 +145,7 @@ class CommentSerializer(BaseSerializer):
             'content',
             'timestamp'
         ]
-        read_only_fields = ['video', 'timestamp']
+        read_only_fields = ['timestamp']
 
     def get_user_url(self, obj):
         if obj.user:
