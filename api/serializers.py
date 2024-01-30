@@ -36,7 +36,7 @@ class ChannelSerializer(BaseSerializer):
             'avatar',
             'creation_date'
         ]
-        read_only_fields = ['subscribers']
+        read_only_fields = ['user', 'subscribers']
 
     def get_user_url(self, obj):
         if obj.user:
@@ -76,7 +76,7 @@ class VideoSerializer(BaseSerializer):
             'dislikes',
             'upload_date'
         ]
-        read_only_fields = ['channel', 'upload_date', 'views', 'likes', 'dislikes']
+        read_only_fields = ['user', 'upload_date', 'views', 'likes', 'dislikes']
 
     def get_channel_url(self, obj):
         if obj.channel:
@@ -87,6 +87,23 @@ class VideoSerializer(BaseSerializer):
         if obj.user:
             return reverse('api:user-detail', kwargs={'pk': obj.user.pk}, request=self.context.get('request'))
         return None
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        if request and request.user:
+            validated_data['user'] = request.user
+        return super().create(validated_data)
+
+    def get_fields(self):
+        fields = super().get_fields()
+        user = self.context['request'].user
+
+        if user.is_authenticated:
+            fields['channel'] = serializers.PrimaryKeyRelatedField(
+                queryset=Channel.objects.filter(user=user),
+                write_only=True
+            )
+        return fields
 
 
 class TagSerializer(BaseSerializer):
@@ -145,7 +162,7 @@ class CommentSerializer(BaseSerializer):
             'content',
             'timestamp'
         ]
-        read_only_fields = ['timestamp']
+        read_only_fields = ['user', 'timestamp']
 
     def get_user_url(self, obj):
         if obj.user:
@@ -156,3 +173,9 @@ class CommentSerializer(BaseSerializer):
         if obj.video:
             return reverse('api:video-detail', kwargs={'pk': obj.video.pk}, request=self.context.get('request'))
         return None
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        if request and request.user:
+            validated_data['user'] = request.user
+        return super().create(validated_data)
