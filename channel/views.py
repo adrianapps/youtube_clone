@@ -79,7 +79,7 @@ def channel_detail(request, pk):
 def creator_channel_detail(request, pk):
     channel, context = get_channel(request, pk)
     if request.user != channel.user:
-        return redirect('channel:channel-detail', pk=pk)
+        return redirect(channel.get_absolute_url())
 
     return render(request, 'channel/creator_channel_detail.html', context)
 
@@ -91,7 +91,7 @@ def channel_create(request):
         if form.is_valid():
             form.instance.user = request.user
             form.save()
-            return redirect(reverse('channel:channel-detail', kwargs={'pk': form.instance.id}))
+            return redirect(form.instance.get_absolute_url())
 
     return render(request, 'channel/channel_create.html', {'form': form})
 
@@ -106,7 +106,7 @@ def channel_update(request, pk):
         if form.is_valid():
             form.instance.user = request.user
             form.save()
-            return redirect(reverse('channel:channel-detail', kwargs={'pk': form.instance.id}))
+            return redirect(form.instance.get_absolute_url())
     return render(request, 'channel/channel_update.html', {'form': form})
 
 
@@ -122,13 +122,13 @@ def channel_delete(request, pk):
 def subscribe(request, pk):
     channel = get_object_or_404(Channel, pk=pk)
     if request.user == channel.user:
-        return redirect('channel:channel-detail', pk=pk)
+        return redirect(channel.get_absolute_url())
 
     if channel.subscribers.filter(id=request.user.id).exists():
         channel.subscribers.remove(request.user)
     else:
         channel.subscribers.add(request.user)
-    return redirect('channel:channel-detail', pk=pk)
+    return redirect(channel.get_absolute_url())
 
 
 @login_required

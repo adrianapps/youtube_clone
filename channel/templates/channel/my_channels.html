@@ -11,7 +11,7 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ channel.name }}</h5>
                         <p class="card-text">{{ channel.description }}</p>
-                        <a href="{% url 'channel:channel-detail' channel.id %}" class="btn btn-primary">Go</a>
+                        <a href="{{ channel.get_absolute_url }}" class="btn btn-primary">Go</a>
                     </div>
                 {% endfor %}
                 </div>

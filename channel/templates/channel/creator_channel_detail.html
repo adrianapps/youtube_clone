@@ -8,8 +8,8 @@
                          height="128">
                     <div class="media-body">
                         <h2 class="mt-0">{{ channel.name }}</h2>
-                                  <a href="{% url 'channel:channel-update' channel.id %}">Update the Channel</a>
-                                | <a href="{% url 'channel:channel-delete' channel.id %}">Delete the Channel</a>
+                                  <a href="{{ channel.get_update_url }}">Update the Channel</a>
+                                | <a href="{{ channel.get_delete_url }}">Delete the Channel</a>
                         <p>{{ channel.description }}</p>
                         <p>Subscribers: {{ channel.subscriber_count }}</p>
                     </div>
@@ -23,7 +23,7 @@
                         <div class="card-body">
                             <h5 class="card-title">{{ video.title }}</h5>
                             <p class="card-text">{{ video.description }}</p>
-                            <a href="{% url 'video:video-detail' video.id %}" class="btn btn-primary">Watch Video</a>
+                            <a href="{{ video.get_absolute_url }}" class="btn btn-primary">Watch Video</a>
                         </div>
                     {% endfor %}
                     </div>

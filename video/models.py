@@ -1,3 +1,5 @@
+from django.urls import reverse
+
 from channel.models import User, Channel
 from django.db import models
 from .validators import validate_file_extension
@@ -25,31 +27,37 @@ class Video(models.Model):
     dislikes = models.ManyToManyField(User, related_name='video_dislike')
     views = models.IntegerField(default=0)
 
+    def __str__(self):
+        return self.title
+
     def save(self, *args, **kwargs):
         if not self.thumbnail:
             self.thumbnail = self.DEFAULT_THUMBNAIL
         super(Video, self).save(*args, **kwargs)
 
-    @property
+    def get_absolute_url(self):
+        return reverse('video:video-detail', kwargs={'pk': self.pk})
+
+    def get_update_url(self):
+        return reverse('video:video-update', kwargs={'pk': self.pk})
+
+    def get_delete_url(self):
+        return reverse('video:video-delete', kwargs={'pk': self.pk})
+
     def dislike_count(self):
         return self.dislikes.count()
 
     def dislike_status(self, user):
         return self.dislikes.filter(pk=user.id).exists()
 
-    @property
     def like_count(self):
         return self.likes.count()
 
     def like_status(self, user):
         return self.likes.filter(pk=user.id).exists()
 
-    @property
     def comment_count(self):
         return self.comments.count()
-
-    def __str__(self):
-        return self.title
 
 
 class Comment(models.Model):

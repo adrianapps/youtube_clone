@@ -11,7 +11,7 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ video.title }}</h5>
                     <p class="card-text">Video description goes here.</p>
-                    <a href="{% url 'video:video-detail' video.id %}" class="btn btn-primary">Watch Video</a>
+                    <a href="{{ video.get_absolute_url }}" class="btn btn-primary">Watch Video</a>
                 </div>
             {% endfor %}
             </div>

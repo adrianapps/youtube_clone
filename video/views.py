@@ -60,7 +60,7 @@ def add_video(request):
             new_video = form.save(commit=False)
             new_video.user = request.user
             new_video.save()
-            return redirect('video:video-detail', pk=new_video.id)
+            return redirect(new_video.get_absolute_url())
 
     return render(request, 'video/add_video.html', {'form': form})
 
@@ -91,7 +91,7 @@ def video_update(request, pk):
         if form.is_valid():
             form.instance.user = request.user
             form.save()
-            return redirect(reverse('video:video-detail', kwargs={'pk': form.instance.id}))
+            return redirect(form.instance.get_absolute_url())
 
     return render(request, 'video/update_video.html', {'form': form})
 
@@ -120,7 +120,7 @@ def toggle_like(request, video, is_like):
         if inactive_set.filter(id=request.user.id).exists():
             inactive_set.remove(request.user)
 
-    return redirect(reverse('video:video-detail', kwargs={'pk': video.id}))
+    return redirect(video.get_absolute_url())
 
 
 @login_required
@@ -143,7 +143,7 @@ def watch_later(request, pk):
     obj, created = WatchLater.objects.get_or_create(user=request.user, video=video)
     if not created:
         obj.delete()
-    return redirect(reverse('video:video-detail', kwargs={'pk': pk}))
+    return redirect(video.get_absolute_url())
 
 
 @login_required

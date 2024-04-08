@@ -5,8 +5,8 @@
     <section class="container mt-4">
         <h2>{{ video.title }}
             {% if request.user == video.user %}
-                | <a href="{% url 'video:vide-update' video.id %}">Update</a>
-                | <a href="{% url 'video:video-delete' video.id %}">Delete</a>
+                | <a href="{{ video.get_absolute_url }}">Update</a>
+                | <a href="{{ video.get_absolute_url }}">Delete</a>
             {% endif %}
         </h2>
         <a href="{% url 'video:like' video.id %}"
@@ -32,7 +32,7 @@
 
         <div class="row mt-4">
             <div class="col-md-8">
-                <h3>Uploaded by: <a href="{% url 'channel:channel-detail' video.channel_id %}">{{ video.channel }}</a>
+                <h3>Uploaded by: <a href="{{ video.channel.get_absolute_url }}">{{ video.channel.name }}</a>
                 </h3>
             </div>
 
