@@ -55,6 +55,13 @@ class UserSerializer(BaseSerializer):
         model = User
         fields = ['url', 'id', 'username', 'email']
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        request = self.context.get('request', None)
+        if request and request.user != instance:
+            data.pop('email', None)
+        return data
+
 
 class VideoSerializer(BaseSerializer):
     channel_url = serializers.SerializerMethodField(read_only=True)

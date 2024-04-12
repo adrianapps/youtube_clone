@@ -4,10 +4,10 @@ from channel.models import User, Channel
 from video.models import Video, Tag, WatchLater, Comment
 from .serializers import UserSerializer, ChannelSerializer, VideoSerializer, TagSerializer, WatchLaterSerializer, \
     CommentSerializer
-from .mixins import IsOwnerOrReadOnlyMixin
+from .mixins import IsOwnerOrReadOnlyMixin, IsUserOrReadOnlyMixin
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(IsUserOrReadOnlyMixin, viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
@@ -22,7 +22,7 @@ class ChannelViewSet(IsOwnerOrReadOnlyMixin, viewsets.ModelViewSet):
     queryset = Channel.objects.all()
 
 
-class TagViewSet(viewsets.ModelViewSet):
+class TagViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = TagSerializer
     queryset = Tag.objects.all()
 
