@@ -5,7 +5,7 @@
     <section class="container mt-4">
         <h2>{{ video.title }}
             {% if request.user == video.user %}
-                | <a href="{{ video.get_absolute_url }}">Update</a>
+                | <a href="{{ video.get_update_url }}">Update</a>
                 | <a href="{{ video.get_absolute_url }}">Delete</a>
             {% endif %}
         </h2>

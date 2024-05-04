@@ -8,8 +8,8 @@
                          height="128">
                     <div class="media-body">
                         <h2 class="mt-0">{{ channel.name }}</h2>
-                                  <a href="{{ channel.get_update_url }}">Update the Channel</a>
-                                | <a href="{{ channel.get_delete_url }}">Delete the Channel</a>
+                        <a href="{{ channel.get_update_url }}">Update the Channel</a>
+                        | <a href="{{ channel.get_delete_url }}">Delete the Channel</a>
                         <p>{{ channel.description }}</p>
                         <p>Subscribers: {{ channel.subscriber_count }}</p>
                     </div>
@@ -18,41 +18,45 @@
                 <div class="mt-4">
                     <h3>Videos</h3>
                     {% for video in page_obj %}
-                        <div class="card">
-                        <img src="{{ video.thumbnail.url }}" class="card-img-top" alt="Video Thumbnail">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ video.title }}</h5>
-                            <p class="card-text">{{ video.description }}</p>
-                            <a href="{{ video.get_absolute_url }}" class="btn btn-primary">Watch Video</a>
+                        <div class="col-md-4 mb-4">
+                            <div class="card" style="max-width: 300px; margin: 0 auto;">
+                                <img src="{{ video.thumbnail.url }}" class="card-img-top" alt="Video Thumbnail">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ video.title }}</h5>
+                                    <p class="card-text">{{ video.description }}</p>
+                                    <a href="{{ video.get_absolute_url }}" class="btn btn-primary">Watch Video</a>
+                                </div>
+                            </div>
                         </div>
                     {% endfor %}
-                    </div>
-                    <nav aria-label="Page navigation example">
-                        <ul class="pagination">
-                            {% if page_obj.has_previous %}
-                                <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
-                                <li class="page-item"><a class="page-link"
-                                                         href="?page={{ page_obj.previous_page_number }}">Previous</a>
-                                </li>
-                            {% endif %}
-                            <li class="page-item active">
-                                <a class="page-link" href="#">{{ page_obj.number }}<span
-                                        class="sr-only">(current)</span></a>
-                            </li>
-                            {% if page_obj.has_next %}
-                                <li class="page-item"><a class="page-link"
-                                                         href="?page={{ page_obj.next_page_number }}">Next</a></li>
-                                <li class="page-item"><a class="page-link"
-                                                         href="?page={{ page_obj.paginator.num_pages }}">Last</a>
-                                </li>
-                            {% endif %}
-                        </ul>
-                    </nav>
                 </div>
-            </div>
 
-            <div class="col-md-4">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
+                            <li class="page-item"><a class="page-link"
+                                                     href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                            </li>
+                        {% endif %}
+                        <li class="page-item active">
+                            <a class="page-link" href="#">{{ page_obj.number }}<span
+                                    class="sr-only">(current)</span></a>
+                        </li>
+                        {% if page_obj.has_next %}
+                            <li class="page-item"><a class="page-link"
+                                                     href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                            <li class="page-item"><a class="page-link"
+                                                     href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
             </div>
         </div>
+
+        <div class="col-md-4">
+        </div>
+    </div>
     </div>
 {% endblock %}
