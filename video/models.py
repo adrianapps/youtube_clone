@@ -1,5 +1,7 @@
 from django.urls import reverse
 
+from PIL import Image
+
 from channel.models import User, Channel
 from django.db import models
 from .validators import validate_file_extension
@@ -34,6 +36,12 @@ class Video(models.Model):
         if not self.thumbnail:
             self.thumbnail = self.DEFAULT_THUMBNAIL
         super(Video, self).save(*args, **kwargs)
+
+        thumbnail = Image.open(self.thumbnail.path)
+        if thumbnail.height > 360 or thumbnail.width > 640:
+            output_size = (640, 360)
+            thumbnail.thumbnail(output_size)
+            thumbnail.save(self.thumbnail.path)
 
     def get_absolute_url(self):
         return reverse('video:video-detail', kwargs={'pk': self.pk})
