@@ -37,7 +37,11 @@ def video_detail(request, pk):
 
     like_status = video.like_status(request.user)
     dislike_status = video.dislike_status(request.user)
-    watch_later_status = WatchLater.objects.filter(user=request.user, video=video).exists()
+
+    if request.user.is_authenticated:
+        watch_later_status = WatchLater.objects.filter(user=request.user, video=video).exists()
+    else:
+        watch_later_status = False
 
     context = {
         'video': video,
