@@ -1,10 +1,13 @@
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.permissions import AllowAny
+from rest_framework.filters import OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
 
 from channel.models import Channel, User
 from .serializers import UserPublicSerializer, UserPrivateSerializer, ChannelListSerializer, ChannelDetailSerializer
 from .permissions import IsChannelOwnerOrReadOnly
+from .filters import UserFilter
 
 
 class UserRegister(generics.CreateAPIView):
@@ -16,6 +19,8 @@ class UserList(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserPublicSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_class = UserFilter
 
 
 class UserDetail(generics.RetrieveAPIView):
