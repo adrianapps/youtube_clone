@@ -1,3 +1,4 @@
+from django.db.models import Count
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.permissions import AllowAny
@@ -7,7 +8,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from channel.models import Channel, User
 from .serializers import UserPublicSerializer, UserPrivateSerializer, ChannelListSerializer, ChannelDetailSerializer
 from .permissions import IsChannelOwnerOrReadOnly
-from .filters import UserFilter
+from .filters import UserFilter, ChannelFilter
 
 
 class UserRegister(generics.CreateAPIView):
@@ -33,12 +34,17 @@ class UserDetail(generics.RetrieveAPIView):
 class ChannelList(generics.ListCreateAPIView):
     serializer_class = ChannelListSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_class = ChannelFilter
+    ordering_fields = ['subscriber_count', 'creation_date']
 
     def get_queryset(self):
         user_id = self.kwargs.get('user_id')
+        queryset = Channel.objects.select_related('user').annotate(
+            subscriber_count=Count('subscribers'))
         if user_id:
-            return Channel.objects.select_related('user').filter(user__id=user_id)
-        return Channel.objects.select_related('user')
+            return queryset.filter(user__id=user_id)
+        return queryset
 
 
 class ChannelDetail(generics.RetrieveUpdateDestroyAPIView):
