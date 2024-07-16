@@ -41,7 +41,7 @@ class ChannelList(generics.ListCreateAPIView):
     def get_queryset(self):
         user_id = self.kwargs.get('user_id')
         queryset = Channel.objects.select_related('user').annotate(
-            subscriber_count=Count('subscribers'))
+            subscribers_count=Count('subscribers'))
         if user_id:
             return queryset.filter(user__id=user_id)
         return queryset

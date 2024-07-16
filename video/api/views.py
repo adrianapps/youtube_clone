@@ -1,15 +1,22 @@
+from django.db.models import Count
 from rest_framework import generics
 from rest_framework import permissions
+from rest_framework.filters import OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
 
 from video.models import Video, Tag, WatchLater, Comment
 from .serializers import VideoSerializer, TagSerializer, CommentSerializer, WatchLaterSerializer
 from .permissions import IsVideoOwnerOrReadOnly, IsSuperUserOrReadOnly, IsWatchLaterOwner, IsCommentOwnerOrReadOnly
+from .filters import TagFilter, VideoFilter
 
 
 class TagList(generics.ListCreateAPIView):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = [permissions.IsAuthenticated, IsSuperUserOrReadOnly]
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_class = TagFilter
+    ordering_filters = ['name']
 
 
 class TagDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -22,11 +29,17 @@ class TagDetail(generics.RetrieveUpdateDestroyAPIView):
 class VideoList(generics.ListCreateAPIView):
     serializer_class = VideoSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_class = VideoFilter
+    ordering_filters = ['likes_count', 'dislikes_count']
 
     def get_queryset(self):
         channel_id = self.kwargs.get('channel_id')
         queryset = Video.objects.select_related('channel').prefetch_related(
             'tag', 'likes', 'dislikes'
+        ).annotate(
+            likes_count=Count('likes'),
+            dislikes_count=Count('dislikes')
         )
         if channel_id:
             return queryset.filter(channel__id=channel_id)
@@ -73,4 +86,3 @@ class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         video_id = self.kwargs.get('video_id')
         return Comment.objects.select_related('video', 'user').filter(video__id=video_id)
-

@@ -25,7 +25,7 @@ class ChannelFilter(django_filters.FilterSet):
             'user__username': ['icontains'],
         }
 
-    def filter_by_subscriber_count(self, queryset, name, value):
+    def filter_by_subscribers_count(self, queryset, name, value):
         if value:
-            return queryset.filter(subscriber_count__range=(value.start, value.stop))
+            return queryset.filter(subscribers_count__range=(value.start, value.stop))
         return queryset
