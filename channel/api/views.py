@@ -28,7 +28,7 @@ class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserPublicSerializer
     permission_classes = [permissions.IsAuthenticated]
-    lookup_field = 'channel_id'
+    lookup_url_kwarg = 'user_id'
 
 
 class ChannelList(generics.ListCreateAPIView):
