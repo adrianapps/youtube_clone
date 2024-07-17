@@ -2,7 +2,7 @@ from django.db.models import Count
 from django_filters import rest_framework as django_filters
 from django_filters.widgets import RangeWidget
 
-from video.models import Tag, Video, WatchLater, Channel
+from video.models import Tag, Video, WatchLater, Channel, Comment
 
 
 class TagFilter(django_filters.FilterSet):
@@ -24,8 +24,8 @@ class VideoFilter(django_filters.FilterSet):
         model = Video
         fields = {
             'title': ['icontains'],
-            'user__username': ['icontains'],
-            'channel__name': ['icontains'],
+            'user__username': ['iexact'],
+            'channel__name': ['iexact'],
             'description': ['icontains']
         }
 
@@ -38,3 +38,30 @@ class VideoFilter(django_filters.FilterSet):
         if value:
             return queryset.filter(dislikes_count__range=(value.start, value.stop))
         return queryset
+
+
+class CommentFilter(django_filters.FilterSet):
+    timestamp = django_filters.DateTimeFromToRangeFilter(
+        widget=RangeWidget(attrs={'type': 'date'})
+    )
+
+    class Meta:
+        model = Comment
+        fields = {
+            'video__title': ['iexact'],
+            'user__username': ['iexact'],
+            'content': ['icontains'],
+        }
+
+
+class WatchLaterFilter(django_filters.FilterSet):
+    timestamp = django_filters.DateTimeFromToRangeFilter(
+        widget=RangeWidget(attrs={'type': 'date'})
+    )
+
+    class Meta:
+        model = WatchLater
+        fields = {
+            'user__username': ['iexact'],
+            'video__title': ['iexact'],
+        }

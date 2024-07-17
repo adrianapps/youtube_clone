@@ -7,7 +7,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from video.models import Video, Tag, WatchLater, Comment
 from .serializers import VideoSerializer, TagSerializer, CommentSerializer, WatchLaterSerializer
 from .permissions import IsVideoOwnerOrReadOnly, IsSuperUserOrReadOnly, IsWatchLaterOwner, IsCommentOwnerOrReadOnly
-from .filters import TagFilter, VideoFilter
+from .filters import TagFilter, VideoFilter, CommentFilter, WatchLaterFilter
 
 
 class TagList(generics.ListCreateAPIView):
@@ -31,7 +31,7 @@ class VideoList(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_class = VideoFilter
-    ordering_filters = ['likes_count', 'dislikes_count']
+    ordering_filters = ['likes_count', 'dislikes_count', 'upload_date']
 
     def get_queryset(self):
         channel_id = self.kwargs.get('channel_id')
@@ -58,6 +58,19 @@ class VideoDetail(generics.RetrieveUpdateDestroyAPIView):
 class WatchLaterList(generics.ListCreateAPIView):
     serializer_class = WatchLaterSerializer
     permission_classes = [permissions.IsAuthenticated, IsWatchLaterOwner]
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_class = WatchLaterFilter
+    ordering_filters = ['timestamp', 'user__username', 'video__title']
+
+    def get_queryset(self):
+        user_id = self.kwargs.get('user_id')
+        return WatchLater.objects.select_related('user').filter(user__id=user_id)
+
+
+class WatchLaterDetail(generics.RetrieveDestroyAPIView):
+    serializer_class = WatchLaterSerializer
+    permissions_classes = [permissions.IsAuthenticated, IsWatchLaterOwner]
+    lookup_url_kwarg = 'watch_later_id'
 
     def get_queryset(self):
         user_id = self.kwargs.get('user_id')
@@ -67,6 +80,9 @@ class WatchLaterList(generics.ListCreateAPIView):
 class CommentList(generics.ListCreateAPIView):
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_class = CommentFilter
+    ordering_filters = ['timestamp', 'user__username', 'video__title']
 
     def get_queryset(self):
         video_id = self.kwargs.get('video_id')
