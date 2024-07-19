@@ -6,7 +6,12 @@ from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 
 from channel.models import Channel, User
-from .serializers import UserPublicSerializer, UserPrivateSerializer, ChannelListSerializer, ChannelDetailSerializer
+from .serializers import (
+    UserPublicSerializer,
+    UserPrivateSerializer,
+    ChannelListSerializer,
+    ChannelDetailSerializer,
+)
 from .permissions import IsChannelOwnerOrReadOnly
 from .filters import UserFilter, ChannelFilter
 
@@ -28,7 +33,7 @@ class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserPublicSerializer
     permission_classes = [permissions.IsAuthenticated]
-    lookup_url_kwarg = 'user_id'
+    lookup_url_kwarg = "user_id"
 
 
 class ChannelList(generics.ListCreateAPIView):
@@ -36,19 +41,20 @@ class ChannelList(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_class = ChannelFilter
-    ordering_fields = ['subscriber_count', 'creation_date']
+    ordering_fields = ["subscriber_count", "creation_date"]
 
     def get_queryset(self):
-        user_id = self.kwargs.get('user_id')
-        queryset = Channel.objects.select_related('user').annotate(
-            subscribers_count=Count('subscribers'))
+        user_id = self.kwargs.get("user_id")
+        queryset = Channel.objects.select_related("user").annotate(
+            subscribers_count=Count("subscribers")
+        )
         if user_id:
             return queryset.filter(user__id=user_id)
         return queryset
 
 
 class ChannelDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Channel.objects.prefetch_related('subscribers').select_related('user')
+    queryset = Channel.objects.prefetch_related("subscribers").select_related("user")
     serializer_class = ChannelDetailSerializer
     permission_classes = [permissions.IsAuthenticated, IsChannelOwnerOrReadOnly]
-    lookup_url_kwarg = 'channel_id'
+    lookup_url_kwarg = "channel_id"
