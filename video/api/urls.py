@@ -4,6 +4,8 @@ from .views import (
     VideoList, VideoDetail, TagList, TagDetail, CommentList, CommentDetail, WatchLaterList, WatchLaterDetail
 )
 
+app_name = 'api_video'
+
 urlpatterns = [
     path('channels/<int:channel_id>/videos/', VideoList.as_view(), name='channel-videos'),
     path('videos/', VideoList.as_view(), name='video-list'),

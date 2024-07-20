@@ -2,6 +2,8 @@ from django.urls import path
 
 from .views import ChannelList, ChannelDetail, UserRegister, UserList, UserDetail
 
+app_name = 'api_channel'
+
 urlpatterns = [
     path('register/', UserRegister.as_view(), name='register'),
     path('users/', UserList.as_view(), name='user-list'),
