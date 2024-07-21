@@ -25,7 +25,8 @@ class UserPublicSerializer(serializers.ModelSerializer):
 
 
 class ChannelListSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(
+    user = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(),
         default=serializers.CurrentUserDefault()
     )
 
