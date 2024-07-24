@@ -1,3 +1,5 @@
+import os
+
 from rest_framework.test import APITestCase
 
 from channel.api.serializers import UserPrivateSerializer, UserPublicSerializer, ChannelListSerializer, \
@@ -52,6 +54,12 @@ class ChannelListSerializerTest(APITestCase):
         self.channel = ChannelFactory(user=self.user)
         self.serializer = ChannelListSerializer(instance=self.channel)
 
+    def tearDown(self):
+        for file in ChannelFactory.files:
+            if os.path.exists(file.path):
+                os.remove(file.path)
+        ChannelFactory.files.clear()
+
     def test_contain_expected_fields(self):
         data = self.serializer.data
         self.assertEqual(set(data.keys()), set(
@@ -87,10 +95,15 @@ class ChannelListSerializerTest(APITestCase):
 class ChannelDetailSerializerTest(APITestCase):
     def setUp(self):
         self.user = UserFactory()
-        self.subscriber = UserFactory()
-        self.channel = ChannelFactory(user=self.user)
-        self.channel.subscribers.add(self.subscriber)
+        self.subscribers = UserFactory.create_batch(3)
+        self.channel = ChannelFactory(user=self.user, subscribers=self.subscribers)
         self.serializer = ChannelDetailSerializer(instance=self.channel)
+
+    def tearDown(self):
+        for file in ChannelFactory.files:
+            if os.path.exists(file.path):
+                os.remove(file.path)
+        ChannelFactory.files.clear()
 
     def test_contain_expected_fields(self):
         data = self.serializer.data
@@ -116,8 +129,8 @@ class ChannelDetailSerializerTest(APITestCase):
 
     def test_subscribers_field_content(self):
         data = self.serializer.data
-        expected_subscriber_id = [self.subscriber.id]
-        self.assertEqual(data['subscribers'], expected_subscriber_id)
+        expected_subscribers_id = [subscriber.id for subscriber in self.subscribers]
+        self.assertEqual(data['subscribers'], expected_subscribers_id)
 
     def test_creation_date_field_content(self):
         data = self.serializer.data
