@@ -6,14 +6,14 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from video.models import Video, Tag, WatchLater, Comment
 from .serializers import VideoSerializer, TagSerializer, CommentSerializer, WatchLaterSerializer
-from .permissions import IsVideoOwnerOrReadOnly, IsSuperUserOrReadOnly, IsWatchLaterOwner, IsCommentOwnerOrReadOnly
+from .permissions import IsVideoOwnerOrReadOnly, IsStaffOrReadOnly, IsWatchLaterOwner, IsCommentOwnerOrReadOnly
 from .filters import TagFilter, VideoFilter, CommentFilter, WatchLaterFilter
 
 
 class TagList(generics.ListCreateAPIView):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = [permissions.IsAuthenticated, IsSuperUserOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsStaffOrReadOnly]
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_class = TagFilter
     ordering_filters = ['name']
@@ -22,7 +22,7 @@ class TagList(generics.ListCreateAPIView):
 class TagDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = [permissions.IsAuthenticated, IsSuperUserOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsStaffOrReadOnly]
     lookup_url_kwarg = 'tag_id'
 
 
