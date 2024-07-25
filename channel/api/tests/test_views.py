@@ -30,7 +30,6 @@ class UserListTest(APITestCase):
 
     def test_get(self):
         response = self.client.get(self.url)
-        response.render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
@@ -48,6 +47,7 @@ class UserDetailTest(APITestCase):
 class ChannelListTest(APITestCase):
     def setUp(self):
         self.user = UserFactory()
+        self.channel = ChannelFactory()
         self.url = reverse('api_channel:channel-list')
         self.client.force_authenticate(user=self.user)
         self.data = {

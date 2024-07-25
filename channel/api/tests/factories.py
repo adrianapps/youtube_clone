@@ -11,6 +11,18 @@ class UserFactory(DjangoModelFactory):
     email = factory.Faker("email")
     password = factory.Faker("password")
 
+    @factory.post_generation
+    def set_staff(self, create, extracted, **kwargs):
+        if extracted:
+            self.is_staff = True
+            self.save()
+
+    @factory.post_generation
+    def set_superuser(self, create, extracted, **kwargs):
+        if extracted:
+            self.is_superuser = True
+            self.save()
+
 
 class ChannelFactory(DjangoModelFactory):
     class Meta:
@@ -24,12 +36,12 @@ class ChannelFactory(DjangoModelFactory):
     files = set()
 
     @factory.post_generation
-    def post(self, created, extracted, **kwargs):
+    def post(self, create, extracted, **kwargs):
         ChannelFactory.files.add(self.avatar)
 
     @factory.post_generation
-    def subscribers(self, created, extracted, **kwargs):
-        if not created:
+    def subscribers(self, create, extracted, **kwargs):
+        if not create:
             return
         if extracted:
             for subscriber in extracted:
