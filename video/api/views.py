@@ -34,16 +34,31 @@ class VideoList(generics.ListCreateAPIView):
     ordering_filters = ['likes_count', 'dislikes_count', 'upload_date']
 
     def get_queryset(self):
-        channel_id = self.kwargs.get('channel_id')
         queryset = Video.objects.select_related('channel').prefetch_related(
             'tag', 'likes', 'dislikes'
         ).annotate(
             likes_count=Count('likes'),
             dislikes_count=Count('dislikes')
         )
-        if channel_id:
-            return queryset.filter(channel__id=channel_id)
         return queryset
+
+
+class ChannelVideoList(generics.ListAPIView):
+    serializer_class = VideoSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_class = VideoFilter
+    ordering_filters = ['likes_count', 'dislikes_count', 'upload_date']
+
+    def get_queryset(self):
+        queryset = Video.objects.select_related('channel').prefetch_related(
+            'tag', 'likes', 'dislikes'
+        ).annotate(
+            likes_count=Count('likes'),
+            dislikes_count=Count('dislikes')
+        )
+        channel_id = self.kwargs.get('channel_id')
+        return queryset.filter(channel__id=channel_id)
 
 
 class VideoDetail(generics.RetrieveUpdateDestroyAPIView):

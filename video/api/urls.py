@@ -1,13 +1,14 @@
 from django.urls import path
 
 from .views import (
-    VideoList, VideoDetail, TagList, TagDetail, CommentList, CommentDetail, WatchLaterList, WatchLaterDetail
+    VideoList, VideoDetail, TagList, TagDetail, CommentList,
+    CommentDetail, WatchLaterList, WatchLaterDetail, ChannelVideoList
 )
 
 app_name = 'api_video'
 
 urlpatterns = [
-    path('channels/<int:channel_id>/videos/', VideoList.as_view(), name='channel-videos'),
+    path('channels/<int:channel_id>/videos/', ChannelVideoList.as_view(), name='channel-videos'),
     path('videos/', VideoList.as_view(), name='video-list'),
     path('videos/<int:video_id>/', VideoDetail.as_view(), name='video-detail'),
     path('videos/<int:video_id>/comments/', CommentList.as_view(), name='video-comments'),
