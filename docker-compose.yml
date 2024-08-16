@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+  web:
+    container_name: youclone
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - AWS_ACCESS_KEY_ID=mock
+      - AWS_SECRET_ACCESS_KEY=mock
+      - AWS_S3_ENDPOINT_URL=http://172.17.0.1:9090
+      - AWS_STORAGE_BUCKET_NAME=bucket
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - s3mock
+  db:
+    container_name: db
+    image: postgres:12
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  s3mock:
+    image: adobe/s3mock:latest
+    ports:
+      - "9090:9090"
+    environment:
+      - initialBuckets=bucket
+
+volumes:
+  pgdata: {}
