@@ -26,17 +26,6 @@ class VideoModelTest(TestCase):
         self.video = VideoFactory(user=self.user, channel=self.channel, likes=self.likers, dislikes=self.dislikers)
         self.comment = CommentFactory(user=self.user, video=self.video)
 
-    def tearDown(self):
-        default_thumbnail_path = os.path.join(MEDIA_ROOT, 'thumbnails', 'default_thumbnail.jpg')
-
-        all_files = VideoFactory.files | ChannelFactory.files
-        for file in all_files:
-            if os.path.exists(file.path) and file.path != default_thumbnail_path:
-                os.remove(file.path)
-
-        VideoFactory.files.clear()
-        ChannelFactory.files.clear()
-
     def test_channel_creation(self):
         self.assertEqual(self.video.user, self.user)
         self.assertEqual(self.video.channel, self.channel)
@@ -91,15 +80,6 @@ class CommentModelTest(TestCase):
         self.commenter = UserFactory()
         self.comment = CommentFactory(user=self.commenter, video=self.video)
 
-    def tearDown(self):
-        all_files = VideoFactory.files | ChannelFactory.files
-        for file in all_files:
-            if os.path.exists(file.path):
-                os.remove(file.path)
-
-        VideoFactory.files.clear()
-        ChannelFactory.files.clear()
-
     def test_comment_creation(self):
         str_comment = f"{self.commenter} -- {self.video}"
         self.assertEqual(str(self.comment), str_comment)
@@ -112,15 +92,6 @@ class WatchLaterModelTest(TestCase):
         self.video = VideoFactory(user=self.channel_owner, channel=self.channel)
         self.viewer = UserFactory()
         self.watch_later = WatchLaterFactory(user=self.viewer, video=self.video)
-
-    def tearDown(self):
-        all_files = VideoFactory.files | ChannelFactory.files
-        for file in all_files:
-            if os.path.exists(file.path):
-                os.remove(file.path)
-
-        VideoFactory.files.clear()
-        ChannelFactory.files.clear()
 
     def test_watch_later_creation(self):
         self.assertEqual(self.watch_later.user, self.viewer)

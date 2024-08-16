@@ -1,8 +1,6 @@
-import os
 from django.test import TestCase
 from django.urls import reverse
 
-from youtube_clone.settings import MEDIA_ROOT
 from channel.models import Channel
 from .factories import UserFactory, ChannelFactory
 
@@ -12,13 +10,6 @@ class ChannelModelTest(TestCase):
         self.user = UserFactory()
         self.subscribers = UserFactory.create_batch(3)
         self.channel = ChannelFactory(user=self.user, subscribers=self.subscribers)
-
-    def tearDown(self):
-        default_avatar_path = os.path.join(MEDIA_ROOT, 'avatars', 'default_avatar.jpg')
-        for file in ChannelFactory.files:
-            if os.path.exists(file.path) and file.path != default_avatar_path:
-                os.remove(file.path)
-        ChannelFactory.files.clear()
 
     def test_channel_creation(self):
         self.assertEqual(self.channel.user, self.user)

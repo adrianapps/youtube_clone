@@ -1,5 +1,6 @@
 import os
 
+from django.core.files.storage import default_storage
 from rest_framework.test import APITestCase
 
 from channel.api.serializers import UserPrivateSerializer, UserPublicSerializer, ChannelListSerializer, \
@@ -54,12 +55,6 @@ class ChannelListSerializerTest(APITestCase):
         self.channel = ChannelFactory(user=self.user)
         self.serializer = ChannelListSerializer(instance=self.channel)
 
-    def tearDown(self):
-        for file in ChannelFactory.files:
-            if os.path.exists(file.path):
-                os.remove(file.path)
-        ChannelFactory.files.clear()
-
     def test_contain_expected_fields(self):
         data = self.serializer.data
         self.assertEqual(set(data.keys()), set(
@@ -98,12 +93,6 @@ class ChannelDetailSerializerTest(APITestCase):
         self.subscribers = UserFactory.create_batch(3)
         self.channel = ChannelFactory(user=self.user, subscribers=self.subscribers)
         self.serializer = ChannelDetailSerializer(instance=self.channel)
-
-    def tearDown(self):
-        for file in ChannelFactory.files:
-            if os.path.exists(file.path):
-                os.remove(file.path)
-        ChannelFactory.files.clear()
 
     def test_contain_expected_fields(self):
         data = self.serializer.data

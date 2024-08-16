@@ -1,5 +1,3 @@
-import os
-
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -77,12 +75,6 @@ class ChannelDetailTest(APITestCase):
             'user': self.user.id,
             'description': "Updated description"
         }
-
-    def tearDown(self):
-        for file in ChannelFactory.files:
-            if os.path.exists(file.path):
-                os.remove(file.path)
-        ChannelFactory.files.clear()
 
     def test_get(self):
         response = self.client.get(self.url)
