@@ -1,9 +1,11 @@
+from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from channel.api.tests.factories import UserFactory
+from channel.api.tests.factories import UserFactory, ChannelFactory
 from video.api.tests.factories import TagFactory, VideoFactory, CommentFactory, WatchLaterFactory
+from .utils import create_image_file
 
 
 class TagListTest(APITestCase):
@@ -59,3 +61,38 @@ class TagDetailTest(APITestCase):
     def test_delete_unprivileged(self):
         response = self.client.delete(self.url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class VideoListTest(APITestCase):
+    def setUp(self):
+        self.user = UserFactory()
+        self.channel_owner = UserFactory()
+        self.channel = ChannelFactory(user=self.channel_owner)
+        self.video = VideoFactory(user=self.channel_owner, channel=self.channel)
+        self.url = reverse('api_video:video-list')
+        self.client.force_authenticate(user=self.user)
+
+        self.mock_file = SimpleUploadedFile("test_video.mp4", b"file_content", content_type="video/mp4")
+        self.mock_thumbnail = create_image_file('test_thumbnail.jpg')
+
+        self.data = {
+            'title': 'video title',
+            'user': self.channel_owner.id,
+            'channel': self.channel.id,
+            'file': self.mock_file,
+            'thumbnail': self.mock_thumbnail,
+            'description': 'video description',
+        }
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_post_privileged(self):
+        self.client.force_authenticate(user=self.channel_owner)
+        response = self.client.post(self.url, self.data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_post_unprivileged(self):
+        response = self.client.post(self.url, self.data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
