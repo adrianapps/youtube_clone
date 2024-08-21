@@ -27,17 +27,11 @@ class UserFactory(DjangoModelFactory):
 class ChannelFactory(DjangoModelFactory):
     class Meta:
         model = Channel
-        exclude = ('files',)
 
     name = factory.Faker("word")
     user = factory.SubFactory(UserFactory)
     description = factory.Faker("text")
     avatar = ImageField()
-    files = set()
-
-    @factory.post_generation
-    def post(self, create, extracted, **kwargs):
-        ChannelFactory.files.add(self.avatar)
 
     @factory.post_generation
     def subscribers(self, create, extracted, **kwargs):

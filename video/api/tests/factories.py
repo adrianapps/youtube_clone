@@ -14,21 +14,14 @@ class TagFactory(DjangoModelFactory):
 class VideoFactory(DjangoModelFactory):
     class Meta:
         model = Video
-        exclude = ('files', )
 
     title = factory.Faker('word')
     user = factory.SubFactory(UserFactory)
     channel = factory.SubFactory(ChannelFactory)
     file = FileField(filename='example.mp4')
-    files = set()
     thumbnail = ImageField()
     description = factory.Faker('text')
     views = factory.Faker("random_int", min=0, max=100000)
-
-    @factory.post_generation
-    def post(self, create, extracted, **kwargs):
-        VideoFactory.files.add(self.file)
-        VideoFactory.files.add(self.thumbnail)
 
     @factory.post_generation
     def tag(self, create, extracted, **kwargs):
