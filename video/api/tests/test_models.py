@@ -1,9 +1,6 @@
-import os
-
 from django.urls import reverse
 from django.test import TestCase
 
-from youtube_clone.settings import MEDIA_ROOT
 from channel.api.tests.factories import UserFactory, ChannelFactory
 from video.models import Video
 from .factories import TagFactory, VideoFactory, CommentFactory, WatchLaterFactory
