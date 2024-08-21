@@ -84,7 +84,7 @@ class WatchLaterList(generics.ListCreateAPIView):
 
 class WatchLaterDetail(generics.RetrieveDestroyAPIView):
     serializer_class = WatchLaterSerializer
-    permissions_classes = [permissions.IsAuthenticated, IsWatchLaterOwner]
+    permission_classes = [permissions.IsAuthenticated, IsWatchLaterOwner]
     lookup_url_kwarg = 'watch_later_id'
 
     def get_queryset(self):
