@@ -11,8 +11,11 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class VideoSerializer(serializers.ModelSerializer):
-    tag = TagSerializer(read_only=True, many=True)
-    user = serializers.HiddenField(
+    tag = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(), many=True
+    )
+    user = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(),
         default=serializers.CurrentUserDefault()
     )
 
@@ -40,6 +43,10 @@ class VideoSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(f"{user.username} is not the owner of {value.name}")
         return value
 
+    def update(self, instance, validated_data):
+        validated_data.pop('file', None)
+        return super().update(instance, validated_data)
+
 
 class CommentSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(
@@ -54,12 +61,14 @@ class CommentSerializer(serializers.ModelSerializer):
             'video',
             'user',
             'content',
+            'timestamp',
         ]
         read_only_fields = ['timestamp']
 
 
 class WatchLaterSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(
+    user = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(),
         default=serializers.CurrentUserDefault()
     )
 
@@ -69,5 +78,6 @@ class WatchLaterSerializer(serializers.ModelSerializer):
             'id',
             'user',
             'video',
+            'timestamp',
         ]
         read_only_fields = ['timestamp']
