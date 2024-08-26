@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from channel.models import Channel
-from .factories import UserFactory, ChannelFactory
+from channel.tests.factories import UserFactory, ChannelFactory
 
 
 class ChannelModelTest(TestCase):

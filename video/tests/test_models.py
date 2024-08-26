@@ -1,9 +1,9 @@
 from django.urls import reverse
 from django.test import TestCase
 
-from channel.api.tests.factories import UserFactory, ChannelFactory
+from channel.tests.factories import UserFactory, ChannelFactory
 from video.models import Video
-from .factories import TagFactory, VideoFactory, CommentFactory, WatchLaterFactory
+from video.tests.factories import TagFactory, VideoFactory, CommentFactory, WatchLaterFactory
 
 
 class TagModelTest(TestCase):

@@ -1,6 +1,6 @@
 import factory
 from factory.django import DjangoModelFactory, FileField, ImageField
-from channel.api.tests.factories import UserFactory, ChannelFactory
+from channel.tests.factories import UserFactory, ChannelFactory
 from video.models import Tag, Video, WatchLater, Comment
 
 
