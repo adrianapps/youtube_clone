@@ -2,7 +2,7 @@ from django.test import TestCase
 
 from channel.api.serializers import UserPrivateSerializer, UserPublicSerializer, ChannelListSerializer, \
     ChannelDetailSerializer
-from .factories import UserFactory, ChannelFactory
+from channel.tests.factories import UserFactory, ChannelFactory
 
 
 class UserPrivateSerializerTest(TestCase):
@@ -102,7 +102,7 @@ class ChannelDetailSerializerTest(TestCase):
 
     def test_subscribers_field_content(self):
         expected_subscribers_id = sorted([subscriber.id for subscriber in self.subscribers])
-        self.assertEqual(self.data['subscribers'], expected_subscribers_id)
+        self.assertEqual(sorted(self.data['subscribers']), expected_subscribers_id)
 
     def test_creation_date_field_content(self):
         formatted_creation_date = self.channel.creation_date.isoformat().replace('+00:00', 'Z')

@@ -3,8 +3,8 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from channel.api.tests.factories import UserFactory, ChannelFactory
-from video.api.tests.factories import TagFactory, VideoFactory, CommentFactory, WatchLaterFactory
+from channel.tests.factories import UserFactory, ChannelFactory
+from video.tests.factories import TagFactory, VideoFactory, CommentFactory, WatchLaterFactory
 from .utils import create_image_file
 
 

@@ -3,7 +3,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from channel.models import User
-from .factories import UserFactory, ChannelFactory
+from channel.tests.factories import UserFactory, ChannelFactory
 
 
 class RegisterTest(APITestCase):

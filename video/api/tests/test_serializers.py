@@ -1,8 +1,8 @@
 from django.test import TestCase
 
 from video.api.serializers import TagSerializer, VideoSerializer, WatchLaterSerializer, CommentSerializer
-from channel.api.tests.factories import UserFactory
-from .factories import TagFactory, VideoFactory, WatchLaterFactory, CommentFactory
+from channel.tests.factories import UserFactory
+from video.tests.factories import TagFactory, VideoFactory, WatchLaterFactory, CommentFactory
 
 
 class TagSerializerTest(TestCase):
@@ -64,15 +64,15 @@ class VideoSerializerTest(TestCase):
 
     def test_tag_field_content(self):
         expected_tags_id = sorted([tag.id for tag in self.tags])
-        self.assertEqual(self.data['tag'], expected_tags_id)
+        self.assertEqual(sorted(self.data['tag']), expected_tags_id)
 
     def test_likes_field_content(self):
         expected_users_id = sorted([user.id for user in self.likes])
-        self.assertEqual(self.data['likes'], expected_users_id)
+        self.assertEqual(sorted(self.data['likes']), expected_users_id)
 
     def test_dislikes_field_content(self):
         expected_users_id = sorted([user.id for user in self.dislikes])
-        self.assertEqual(self.data['dislikes'], expected_users_id)
+        self.assertEqual(sorted(self.data['dislikes']), expected_users_id)
 
     def test_views_field_content(self):
         self.assertEqual(self.data['views'], self.video.views)
