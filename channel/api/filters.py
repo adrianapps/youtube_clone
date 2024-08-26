@@ -1,4 +1,3 @@
-from django.db.models import Count
 from django_filters import rest_framework as django_filters
 from django_filters.widgets import RangeWidget
 

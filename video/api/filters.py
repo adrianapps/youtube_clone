@@ -1,8 +1,7 @@
-from django.db.models import Count
 from django_filters import rest_framework as django_filters
 from django_filters.widgets import RangeWidget
 
-from video.models import Tag, Video, WatchLater, Channel, Comment
+from video.models import Tag, Video, WatchLater, Comment
 
 
 class TagFilter(django_filters.FilterSet):
