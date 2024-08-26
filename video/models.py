@@ -1,6 +1,9 @@
-from django.urls import reverse
+from io import BytesIO
 
 from PIL import Image
+
+from django.urls import reverse
+from django.core.files.storage import default_storage
 
 from channel.models import User, Channel
 from django.db import models
@@ -37,11 +40,15 @@ class Video(models.Model):
             self.thumbnail = self.DEFAULT_THUMBNAIL
         super(Video, self).save(*args, **kwargs)
 
-        thumbnail = Image.open(self.thumbnail.path)
+        memfile = BytesIO()
+        thumbnail = Image.open(self.thumbnail)
         if thumbnail.height > 360 or thumbnail.width > 640:
             output_size = (640, 360)
             thumbnail.thumbnail(output_size)
-            thumbnail.save(self.thumbnail.path)
+            thumbnail.save(memfile, 'JPEG', quality=95)
+            default_storage.save(self.thumbnail, memfile)
+            memfile.close()
+            thumbnail.close()
 
     def get_absolute_url(self):
         return reverse('video:video-detail', kwargs={'pk': self.pk})
